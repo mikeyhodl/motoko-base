@@ -3,6 +3,7 @@
 import Array "Array";
 import Buffer "Buffer";
 import List "List";
+import Order "Order";
 
 module {
 
@@ -33,14 +34,18 @@ module {
   /// ```
   public class range(x : Nat, y : Int) {
     var i = x;
-    public func next() : ?Nat { if (i > y) { null } else {let j = i; i += 1; ?j} };
+    public func next() : ?Nat {
+      if (i > y) { null } else { let j = i; i += 1; ?j };
+    };
   };
 
   /// Like `range` but produces the values in the opposite
   /// order.
   public class revRange(x : Int, y : Int) {
-      var i = x;
-      public func next() : ?Int { if (i < y) { null } else {let j = i; i -= 1; ?j} };
+    var i = x;
+    public func next() : ?Int {
+      if (i < y) { null } else { let j = i; i -= 1; ?j };
+    };
   };
 
   /// Calls a function `f` on every value produced by an iterator and discards
@@ -56,7 +61,7 @@ module {
   /// ```
   public func iterate<A>(
     xs : Iter<A>,
-    f : (A, Nat) -> ()
+    f : (A, Nat) -> (),
   ) {
     var i = 0;
     label l loop {
@@ -77,7 +82,7 @@ module {
   /// (discarding them in the process).
   public func size<A>(xs : Iter<A>) : Nat {
     var len = 0;
-    iterate<A>(xs, func (x, i) { len += 1; });
+    iterate<A>(xs, func(x, i) { len += 1 });
     len;
   };
 
@@ -94,16 +99,40 @@ module {
   /// ```
   public func map<A, B>(xs : Iter<A>, f : A -> B) : Iter<B> = object {
     public func next() : ?B {
-      label l loop {
+      switch (xs.next()) {
+        case (?next) {
+          ?f(next);
+        };
+        case (null) {
+          null;
+        };
+      };
+    };
+  };
+
+  /// Takes a function and an iterator and returns a new iterator that produces
+  /// elements from the original iterator if and only if the predicate is true.
+  /// ```motoko
+  /// import Iter "o:base/Iter";
+  /// let iter = Iter.range(1, 3);
+  /// let mappedIter = Iter.filter(iter, func (x : Nat) : Bool { x % 2 == 1 });
+  /// assert(?1 == mappedIter.next());
+  /// assert(?3 == mappedIter.next());
+  /// assert(null == mappedIter.next());
+  /// ```
+  public func filter<A>(xs : Iter<A>, f : A -> Bool) : Iter<A> = object {
+    public func next() : ?A {
+      loop {
         switch (xs.next()) {
-          case (?next) {
-            return ?f(next);
-          };
           case (null) {
-            break l;
+            return null;
+          };
+          case (?x) {
+            if (f(x)) {
+              return ?x;
+            };
           };
         };
-        continue l;
       };
       null;
     };
@@ -139,14 +168,14 @@ module {
     object {
       public func next() : ?A {
         if (ix >= size) {
-          return null
+          return null;
         } else {
           let res = ?(xs[ix]);
           ix += 1;
-          return res
-        }
-      }
-    }
+          return res;
+        };
+      };
+    };
   };
 
   /// Like `fromArray` but for Arrays with mutable elements. Captures
@@ -157,9 +186,7 @@ module {
   };
 
   /// Like `fromArray` but for Lists.
-  public func fromList<A>(xs : List.List<A>) : Iter<A> {
-    List.toArray<A>(xs).vals();
-  };
+  public let fromList = List.toIter;
 
   /// Consumes an iterator and collects its produced elements in an Array.
   /// ```motoko
@@ -170,7 +197,7 @@ module {
   public func toArray<A>(xs : Iter<A>) : [A] {
     let buffer = Buffer.Buffer<A>(8);
     iterate(xs, func(x : A, ix : Nat) { buffer.add(x) });
-    return buffer.toArray()
+    return Buffer.toArray(buffer);
   };
 
   /// Like `toArray` but for Arrays with mutable elements.
@@ -181,9 +208,20 @@ module {
   /// Like `toArray` but for Lists.
   public func toList<A>(xs : Iter<A>) : List.List<A> {
     var result = List.nil<A>();
-    iterate<A>(xs, func (x, _i) {
-      result := List.push<A>(x, result);
-    });
+    iterate<A>(
+      xs,
+      func(x, _i) {
+        result := List.push<A>(x, result);
+      },
+    );
     List.reverse<A>(result);
   };
-}
+
+  /// Sorted iterator.  Will iterate over *all* elements to sort them, necessarily.
+  public func sort<A>(xs : Iter<A>, compare : (A, A) -> Order.Order) : Iter<A> {
+    let a = toArrayMut<A>(xs);
+    Array.sortInPlace<A>(a, compare);
+    fromArrayMut<A>(a);
+  };
+
+};
