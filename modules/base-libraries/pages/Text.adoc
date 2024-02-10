@@ -73,6 +73,44 @@ for (c in Text.toIter("abc")) {
 }
 ```
 
+[[toArray]]
+== toArray
+
+[source.no-repl,motoko,subs=+macros]
+----
+func toArray(t : xref:#type.Text[Text]) : pass:[[]Charpass:[]]
+----
+
+Creates a new `Array` containing characters of the given `Text`.
+
+Equivalent to `Iter.toArray(t.chars())`.
+
+```motoko include=import
+assert Text.toArray("Café") == ['C', 'a', 'f', 'é'];
+```
+
+Runtime: O(t.size())
+Space: O(t.size())
+
+[[toVarArray]]
+== toVarArray
+
+[source.no-repl,motoko,subs=+macros]
+----
+func toVarArray(t : xref:#type.Text[Text]) : pass:[[]var Charpass:[]]
+----
+
+Creates a new mutable `Array` containing characters of the given `Text`.
+
+Equivalent to `Iter.toArrayMut(t.chars())`.
+
+```motoko include=import
+assert Text.toVarArray("Café") == [var 'C', 'a', 'f', 'é'];
+```
+
+Runtime: O(t.size())
+Space: O(t.size())
+
 [[fromIter]]
 == fromIter
 
@@ -500,5 +538,35 @@ Returns `null` if the blob is not valid UTF-8.
 
 ```motoko include=import
 let text = Text.decodeUtf8("\48\65\6C\6C\6F"); // ?"Hello"
+```
+
+[[toLowercase]]
+== toLowercase
+
+[source.no-repl,motoko,subs=+macros]
+----
+let toLowercase : xref:#type.Text[Text] -> xref:#type.Text[Text]
+----
+
+Returns the text argument in lowercase.
+WARNING: Unicode compliant only when compiled, not interpreted.
+
+```motoko include=import
+let text = Text.toLowercase("Good Day"); // ?"good day"
+```
+
+[[toUppercase]]
+== toUppercase
+
+[source.no-repl,motoko,subs=+macros]
+----
+let toUppercase : xref:#type.Text[Text] -> xref:#type.Text[Text]
+----
+
+Returns the text argument in uppercase. Unicode compliant.
+WARNING: Unicode compliant only when compiled, not interpreted.
+
+```motoko include=import
+let text = Text.toUppercase("Good Day"); // ?"GOOD DAY"
 ```
 
