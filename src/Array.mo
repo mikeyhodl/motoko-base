@@ -162,7 +162,7 @@ module {
   };
 
   /// Create a new array by appending the values of `array1` and `array2`.
-  /// @deprecated `Array.append` copies its arguments and has linear complexity;
+  /// Note that `Array.append` copies its arguments and has linear complexity;
   /// when used in a loop, consider using a `Buffer`, and `Buffer.append`, instead.
   ///
   /// ```motoko include=import
@@ -859,7 +859,7 @@ module {
     let len = Prim.abs(length);
     let size = array.size();
     let resSize = if (len < size) { len } else { size };
-    let start = if (length > 0) 0 else size - resSize;
+    let start : Nat = if (length > 0) 0 else size - resSize;
     subArray(array, start, resSize)
   }
 }
