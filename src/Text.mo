@@ -23,6 +23,7 @@
 import Char "Char";
 import Iter "Iter";
 import Hash "Hash";
+import List "List";
 import Stack "Stack";
 import Prim "mo:⛔";
 
@@ -43,6 +44,26 @@ module {
   /// let text = Text.fromChar('A'); // "A"
   /// ```
   public let fromChar : (c : Char) -> Text = Prim.charToText;
+
+  /// Converts the given `[Char]` to a `Text` value.
+  ///
+  /// ```motoko include=import
+  /// let text = Text.fromArray(['A', 'v', 'o', 'c', 'a', 'd', 'o']); // "Avocado"
+  /// ```
+  ///
+  /// Runtime: O(a.size())
+  /// Space: O(a.size())
+  public func fromArray(a : [Char]) : Text = fromIter(a.vals());
+
+  /// Converts the given `[var Char]` to a `Text` value.
+  ///
+  /// ```motoko include=import
+  /// let text = Text.fromVarArray([var 'E', 'g', 'g', 'p', 'l', 'a', 'n', 't']); // "Eggplant"
+  /// ```
+  ///
+  /// Runtime: O(a.size())
+  /// Space: O(a.size())
+  public func fromVarArray(a : [var Char]) : Text = fromIter(a.vals());
 
   /// Iterates over each `Char` value in the given `Text`.
   ///
@@ -76,7 +97,7 @@ module {
       func _ {
         switch (cs.next()) {
           case (?c) { c };
-          case (null) { Prim.trap("Text.toArray") };
+          case null { Prim.trap("Text.toArray") };
         };
       }
     )
@@ -117,6 +138,34 @@ module {
       r #= Prim.charToText(c)
     };
     return r
+  };
+
+  /// Create a text from a character list.
+  /// Example:
+  /// ```motoko include=initialize
+  /// fromList(?('H', ?('e', ?('l', ?('l', ?('o', null))))));
+  /// // => "Hello"
+  /// ```
+  ///
+  /// Runtime: O(size cs)
+  /// Space: O(size cs)
+  public func fromList(cs : List.List<Char>) : Text = fromIter(List.toIter cs);
+
+  /// Create a character list from a text.
+  /// Example:
+  /// ```motoko include=initialize
+  /// toList("Hello");
+  /// // => ?('H', ?('e', ?('l', ?('l', ?('o', null)))))
+  /// ```
+  ///
+  /// Runtime: O(t.size())
+  /// Space: O(t.size())
+  public func toList(t : Text) : List.List<Char> {
+    var acc : List.List<Char> = null;
+    for (c in t.chars()) {
+        acc := ?(c, acc)
+    };
+    List.reverse acc
   };
 
   /// Returns the number of characters in the given `Text`.
