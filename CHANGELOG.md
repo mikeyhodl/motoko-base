@@ -1,4 +1,24 @@
-## 0.13.x
+## 0.14.2
+
+(nothing)
+
+## 0.14.1
+
+(nothing)
+
+## 0.14.0
+
+(nothing)
+
+## 0.13.7
+
+(nothing)
+
+## 0.13.6
+
+(nothing)
+
+## 0.13.5
 
 * Added `Text.fromList` and `Text.toList` functions (#676).
 
