@@ -8,11 +8,11 @@ on:
 
 env:
   vessel_version: "v0.7.0"
-  moc_version: "0.13.5"
+  moc_version: "0.14.8"
 
 jobs:
   verify:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checking out motoko-base
       uses: actions/checkout@v4

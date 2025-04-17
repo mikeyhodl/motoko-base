@@ -17,6 +17,8 @@ module {
   ///   #system_fatal;
   ///   // Transient error.
   ///   #system_transient;
+  ///   // Response unknown due to missed deadline.
+  ///   #system_unknown;
   ///   // Destination invalid.
   ///   #destination_invalid;
   ///   // Explicit reject by canister code.
@@ -58,11 +60,26 @@ module {
   /// Example:
   /// ```motoko
   /// import Error "mo:base/Error";
-  /// import Debug "mo:base/Debug";
   ///
   /// let error = Error.reject("Example error");
   /// Error.message(error) // "Example error"
   /// ```
   public let message : (error : Error) -> Text = Prim.errorMessage;
+
+  /// Returns whether retrying to send a message may result in success.
+  ///
+  /// Example:
+  /// ```motoko
+  /// import { message; isRetryPossible } "mo:base/Error";
+  /// import { print } "mo:base/Debug";
+  ///
+  /// try await (with timeout = 3) Actor.call(arg)
+  /// catch e { if (isRetryPossible e) print(message e) }
+  /// ```
+  public func isRetryPossible(error : Error) : Bool =
+    switch (code error) {
+      case (#system_unknown or #system_transient) true;
+      case _ false
+    };
 
 }

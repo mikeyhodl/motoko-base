@@ -9,12 +9,12 @@ on:
 # Remember to update me in package-set.yml as well
 env:
   vessel_version: "v0.7.0"
-  moc_version: "0.13.5"
+  moc_version: "0.14.8"
 
 jobs:
   tests:
     if: github.ref != 'refs/heads/next-moc' && github.base_ref != 'refs/heads/next-moc'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4

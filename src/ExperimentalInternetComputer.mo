@@ -31,6 +31,9 @@ module {
   /// [Learn more about Candid serialization](https://internetcomputer.org/docs/current/motoko/main/reference/language-manual#candid-serialization)
   public let call : (canister : Principal, name : Text, data : Blob) -> async (reply : Blob) = Prim.call_raw;
 
+  /// `isReplicated` is true for update messages and for queries that passed through consensus.
+  public let isReplicated : () -> Bool = Prim.isReplicatedExecution;
+
   /// Given computation, `comp`, counts the number of actual and (for IC system calls) notional WebAssembly
   /// instructions performed during the execution of `comp()`.
   ///
@@ -84,8 +87,21 @@ module {
 
   /// Returns the time (in nanoseconds from the epoch start) by when the update message should
   /// reply to the best effort message so that it can be received by the requesting canister.
-  /// Queries and non-best-effort update messages return zero.
+  /// Queries and unbounded-time update messages return null.
+  public func replyDeadline() : ?Nat {
+    let raw = Prim.replyDeadline();
+    if (raw == 0) null else ?Prim.nat64ToNat(raw)
+  };
+
+  /// Returns the subnet's principal for the running actor.
+  /// Note: Due to canister migration the hosting subnet can vary with time.
   ///
-  public func replyDeadline() : Nat = Prim.nat64ToNat(Prim.replyDeadline());
+  /// Example:
+  /// ```motoko no-repl
+  /// import IC "mo:base/ExperimentalInternetComputer";
+  ///
+  /// let subnetPrincipal = IC.subnet();
+  /// ```
+  public let subnet : () -> Principal = Prim.canisterSubnet;
 
 }
