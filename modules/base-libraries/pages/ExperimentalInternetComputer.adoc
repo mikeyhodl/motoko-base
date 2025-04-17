@@ -10,7 +10,7 @@ Low-level interface to the Internet Computer.
 
 [source.no-repl,motoko,subs=+macros]
 ----
-let call : (canister : Principal, name : Text, data : Blob) -> async (reply : Blob)
+func call<$>(canister : Principal, name : Text, data : Blob) : async (reply : Blob)
 ----
 
 Calls ``canister``'s update or query function, `name`, with the binary contents of `data` as IC argument.
@@ -36,6 +36,16 @@ let output : ?OutputType = from_candid(rawReply); // { decimals = 8 }
 ```
 
 [Learn more about Candid serialization](https://internetcomputer.org/docs/current/motoko/main/reference/language-manual#candid-serialization)
+
+[[isReplicated]]
+== isReplicated
+
+[source.no-repl,motoko,subs=+macros]
+----
+func isReplicated() : Bool
+----
+
+`isReplicated` is true for update messages and for queries that passed through consensus.
 
 [[countInstructions]]
 == countInstructions
@@ -67,7 +77,7 @@ let count = IC.countInstructions(func() {
 
 [source.no-repl,motoko,subs=+macros]
 ----
-let performanceCounter : (counter : Nat32) -> (value : Nat64)
+func performanceCounter(counter : Nat32) : (value : Nat64)
 ----
 
 Returns the current value of IC _performance counter_ `counter`.
@@ -99,11 +109,28 @@ let diff : Nat64 = IC.performanceCounter(1) - c1;
 
 [source.no-repl,motoko,subs=+macros]
 ----
-func replyDeadline() : Nat
+func replyDeadline() : ?Nat
 ----
 
 Returns the time (in nanoseconds from the epoch start) by when the update message should
 reply to the best effort message so that it can be received by the requesting canister.
-Queries and non-best-effort update messages return zero.
+Queries and unbounded-time update messages return null.
 
+[[subnet]]
+== subnet
+
+[source.no-repl,motoko,subs=+macros]
+----
+func subnet() : Principal
+----
+
+Returns the subnet's principal for the running actor.
+Note: Due to canister migration the hosting subnet can vary with time.
+
+Example:
+```motoko no-repl
+import IC "mo:base/ExperimentalInternetComputer";
+
+let subnetPrincipal = IC.subnet();
+```
 
