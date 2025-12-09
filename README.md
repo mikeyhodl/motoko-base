@@ -1,8 +1,8 @@
 The Motoko base library
 =======================
 
-> **Important update:** The Motoko `base` library has been replaced by the official [`core`](https://github.com/dfinity/motoko-core) package. New projects should use `core` instead of `base`.
->
+> **Important update:** The Motoko base library has been replaced by the official [`core`](https://github.com/dfinity/motoko-core) package. New projects should use `core` instead of `base`.
+> 
 > - [GitHub repository](https://github.com/dfinity/motoko-core)
 > - [Core documentation](https://internetcomputer.org/docs/motoko/core)
 > - [Core Mops package](https://mops.one/core)
@@ -103,8 +103,6 @@ The `next-moc` branch contains changes that make base compatible with the
 in-development version of `moc`. This repository's public CI does _not_ run
 on that branch.
 
-External contributions are best made against `master`.
-
 - `master` branch is meant for the newest **released** version of `moc`
   - The CI runs on this branch
 - `next-moc` branch is meant for the **in-development** version of `moc`
@@ -116,8 +114,5 @@ Both branches are kept in sync with each other by mutual, circular merges:
 
 Only *normal* merges are allowed between `master` and `next-moc`, because development is permitted on both branches.
 This policy makes every PR (to either branch) visible in the history of both branches.
-
-Contributing
-------------
 
 Please read the [Interface Design Guide for Motoko Base Library](doc/design.md) before making a pull request.
